@@ -1,0 +1,35 @@
+---
+# Le paquet RPM "vault" installe aussi le service vault.service ; on veut
+# uniquement le CLI sur un runner, donc on telecharge le binaire en zip.
+
+- name: Check installed Vault CLI version
+  ansible.builtin.command:
+    cmd: "{{ infra_tools_vault_install_path }} version"
+  register: infra_tools_vault_installed
+  changed_when: false
+  failed_when: false
+
+- name: Download Vault CLI archive
+  ansible.builtin.get_url:
+    url: "{{ infra_tools_vault_download_url }}"
+    dest: "/tmp/vault_{{ infra_tools_vault_version }}.zip"
+    mode: "0644"
+  become: true
+  when: infra_tools_vault_version not in (infra_tools_vault_installed.stdout | default(''))
+
+- name: Extract Vault CLI binary to /usr/local/bin
+  ansible.builtin.unarchive:
+    src: "/tmp/vault_{{ infra_tools_vault_version }}.zip"
+    dest: "{{ infra_tools_local_bin }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  when: infra_tools_vault_version not in (infra_tools_vault_installed.stdout | default(''))
+
+- name: Remove Vault CLI archive
+  ansible.builtin.file:
+    path: "/tmp/vault_{{ infra_tools_vault_version }}.zip"
+    state: absent
+  become: true

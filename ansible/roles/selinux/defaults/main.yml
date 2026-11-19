@@ -1,0 +1,7 @@
+---
+selinux_state: enforcing
+selinux_policy: targeted
+
+# Booleans a activer. Vide par defaut : les runners shell n'en ont pas besoin.
+# Le group_vars/docker_runners.yml override cette liste avec container_manage_cgroup.
+selinux_booleans: []

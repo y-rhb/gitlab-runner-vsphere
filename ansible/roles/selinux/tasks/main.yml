@@ -1,0 +1,15 @@
+---
+- name: Ensure SELinux is in enforcing mode
+  ansible.posix.selinux:
+    state: "{{ selinux_state }}"
+    policy: "{{ selinux_policy }}"
+  become: true
+
+- name: Configure SELinux booleans for Docker
+  ansible.posix.seboolean:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    persistent: "{{ item.persistent }}"
+  loop: "{{ selinux_booleans }}"
+  become: true
+  when: selinux_booleans | length > 0

@@ -1,0 +1,21 @@
+---
+- name: Install system packages (jq, unzip, python3...)
+  ansible.builtin.dnf:
+    name: "{{ infra_tools_system_packages }}"
+    state: present
+  become: true
+
+- name: Install HashiCorp Terraform
+  ansible.builtin.include_tasks: terraform.yml
+
+- name: Install HashiCorp Vault CLI
+  ansible.builtin.include_tasks: vault.yml
+
+- name: Install kubectl
+  ansible.builtin.include_tasks: kubectl.yml
+
+- name: Install govc (VMware vSphere CLI)
+  ansible.builtin.include_tasks: govc.yml
+
+- name: Install Ansible (core + collections)
+  ansible.builtin.include_tasks: ansible.yml

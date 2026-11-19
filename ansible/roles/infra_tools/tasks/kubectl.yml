@@ -1,0 +1,21 @@
+---
+- name: Add Kubernetes RPM repository
+  ansible.builtin.yum_repository:
+    name: kubernetes
+    description: "Kubernetes v{{ infra_tools_kubectl_major }}"
+    baseurl: "{{ infra_tools_kubectl_repo_baseurl }}"
+    gpgcheck: true
+    gpgkey: "{{ infra_tools_kubectl_repo_gpgkey }}"
+    enabled: true
+    exclude:
+      - kubelet
+      - kubeadm
+  become: true
+
+- name: Install kubectl {{ infra_tools_kubectl_version }}
+  ansible.builtin.dnf:
+    name: "kubectl-{{ infra_tools_kubectl_version }}"
+    state: present
+    allow_downgrade: true
+    disable_excludes: kubernetes
+  become: true

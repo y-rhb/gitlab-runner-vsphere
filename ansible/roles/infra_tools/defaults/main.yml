@@ -1,0 +1,54 @@
+---
+# ============================================================================
+# Versions epinglees - a mettre a jour apres revue des releases
+# ============================================================================
+# Verifier avant deploy :
+#   - https://releases.hashicorp.com/terraform/
+#   - https://releases.hashicorp.com/vault/
+#   - https://github.com/vmware/govmomi/releases
+#   - https://kubernetes.io/releases/
+#   - https://pypi.org/project/ansible-core/
+# ============================================================================
+
+infra_tools_terraform_version: "1.10.5"
+infra_tools_vault_version: "1.18.2"
+infra_tools_kubectl_version: "1.31.3"
+infra_tools_kubectl_major: "1.31"
+infra_tools_govc_version: "0.47.1"
+infra_tools_ansible_core_version: "2.18.0"
+infra_tools_ansible_lint_version: "26.4.0"
+
+# --- Collections Ansible requises sur le runner ---
+infra_tools_ansible_collections:
+  - name: ansible.posix
+    version: "1.6.2"
+  - name: community.general
+    version: "10.0.0"
+  - name: community.vmware
+    version: "5.2.0"
+
+# --- Sources / repos ---
+infra_tools_hashicorp_repo_url: "https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
+infra_tools_vault_download_url: "https://releases.hashicorp.com/vault/{{ infra_tools_vault_version }}/vault_{{ infra_tools_vault_version }}_linux_amd64.zip"
+infra_tools_kubectl_repo_baseurl: "https://pkgs.k8s.io/core:/stable:/v{{ infra_tools_kubectl_major }}/rpm/"
+infra_tools_kubectl_repo_gpgkey: "https://pkgs.k8s.io/core:/stable:/v{{ infra_tools_kubectl_major }}/rpm/repodata/repomd.xml.key"
+infra_tools_govc_download_url: "https://github.com/vmware/govmomi/releases/download/v{{ infra_tools_govc_version }}/govc_Linux_x86_64.tar.gz"
+
+# --- Chemins d'installation ---
+infra_tools_local_bin: /usr/local/bin
+infra_tools_vault_install_path: "{{ infra_tools_local_bin }}/vault"
+infra_tools_govc_install_path: "{{ infra_tools_local_bin }}/govc"
+
+# --- Packages systeme ---
+infra_tools_system_packages:
+  - jq
+  - unzip
+  - openssh-clients
+  - python3
+  - python3-pip
+  - python3.11
+  - python3.11-pip
+  # Binaire pour `haproxy -c` : valide la conf rendue (base + conf.d) dans le
+  # job CI validate-haproxy-config de HAProxy_IaC, avant tout deploiement.
+  # Installe le binaire uniquement — le service haproxy n'est jamais active.
+  - haproxy

@@ -1,0 +1,19 @@
+---
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose-plugin
+
+docker_repo_baseurl: "https://download.docker.com/linux/centos/$releasever/$basearch/stable"
+docker_repo_gpgkey: "https://download.docker.com/linux/centos/gpg"
+
+docker_users:
+  - rocky
+
+docker_daemon_config:
+  storage-driver: overlay2
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "3"

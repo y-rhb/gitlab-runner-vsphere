@@ -1,0 +1,16 @@
+---
+- name: Add HashiCorp RPM repository
+  ansible.builtin.get_url:
+    url: "{{ infra_tools_hashicorp_repo_url }}"
+    dest: /etc/yum.repos.d/hashicorp.repo
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+
+- name: Install Terraform {{ infra_tools_terraform_version }}
+  ansible.builtin.dnf:
+    name: "terraform-{{ infra_tools_terraform_version }}"
+    state: present
+    allow_downgrade: true
+  become: true

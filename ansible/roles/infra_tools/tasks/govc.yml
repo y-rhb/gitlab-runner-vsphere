@@ -1,0 +1,34 @@
+---
+- name: Check installed govc version
+  ansible.builtin.command:
+    cmd: "{{ infra_tools_govc_install_path }} version"
+  register: infra_tools_govc_installed
+  changed_when: false
+  failed_when: false
+
+- name: Download govc archive
+  ansible.builtin.get_url:
+    url: "{{ infra_tools_govc_download_url }}"
+    dest: "/tmp/govc_{{ infra_tools_govc_version }}.tar.gz"
+    mode: "0644"
+  become: true
+  when: infra_tools_govc_version not in (infra_tools_govc_installed.stdout | default(''))
+
+- name: Extract govc binary to /usr/local/bin
+  ansible.builtin.unarchive:
+    src: "/tmp/govc_{{ infra_tools_govc_version }}.tar.gz"
+    dest: "{{ infra_tools_local_bin }}"
+    remote_src: true
+    include:
+      - govc
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  when: infra_tools_govc_version not in (infra_tools_govc_installed.stdout | default(''))
+
+- name: Remove govc archive
+  ansible.builtin.file:
+    path: "/tmp/govc_{{ infra_tools_govc_version }}.tar.gz"
+    state: absent
+  become: true

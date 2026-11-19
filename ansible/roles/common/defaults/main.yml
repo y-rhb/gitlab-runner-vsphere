@@ -1,0 +1,8 @@
+---
+common_packages:
+  - vim
+  - git
+  - curl
+  - wget
+  - dnf-utils
+  - policycoreutils-python-utils

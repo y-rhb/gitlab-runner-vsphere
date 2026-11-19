@@ -1,0 +1,7 @@
+---
+firewalld_default_zone: public
+
+firewalld_services:
+  - ssh
+
+firewalld_ports: []

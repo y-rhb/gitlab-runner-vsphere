@@ -1,0 +1,31 @@
+---
+- name: Install ansible-core {{ infra_tools_ansible_core_version }} and ansible-lint {{ infra_tools_ansible_lint_version }} via pip3.11
+  ansible.builtin.pip:
+    name:
+      - "ansible-core=={{ infra_tools_ansible_core_version }}"
+      - "ansible-lint=={{ infra_tools_ansible_lint_version }}"
+    state: forcereinstall
+    executable: pip3.11
+  become: true
+
+# Rocky 9 durci : umask root = 0027, les fichiers crees par pip en root ne sont pas
+# accessibles au user gitlab-runner. lib64/ contient les packages avec C extensions
+# (markupsafe, cryptography, etc.) donc doit etre traversable par tous.
+- name: Ensure pip3.11 binaries and site-packages are world-readable (Rocky 9 CIS umask 0027)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: a+rX
+    recurse: true
+  loop:
+    - /usr/local/bin
+    - /usr/local/lib/python3.11/site-packages
+    - /usr/local/lib64/python3.11/site-packages
+  become: true
+
+- name: Install required Ansible collections
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/ansible-galaxy collection install {{ item.name }}:{{ item.version }} --force"
+  loop: "{{ infra_tools_ansible_collections }}"
+  register: infra_tools_galaxy_install
+  changed_when: "'was installed successfully' in infra_tools_galaxy_install.stdout"
+  become: true

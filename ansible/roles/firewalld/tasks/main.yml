@@ -1,0 +1,34 @@
+---
+- name: Ensure firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+  become: true
+
+- name: Ensure firewalld is running and enabled
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+  become: true
+
+- name: Allow required services through firewall
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    zone: "{{ firewalld_default_zone }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ firewalld_services }}"
+  become: true
+
+- name: Allow required ports through firewall
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    zone: "{{ firewalld_default_zone }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ firewalld_ports }}"
+  when: firewalld_ports | length > 0
+  become: true
